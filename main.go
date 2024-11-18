@@ -11,9 +11,9 @@ func main() {
 	listenAddr := flag.String("listenAddr", ":5000", "server running properly")
 	app := fiber.New()
 
-	apiv1 := app.Group("api/v1")
+	apiv1User := app.Group("api/v1/user")
 
-	apiv1.Get("/amir", api.HandleGetUser)
+	apiv1User.Get("", api.HandleGetUser)
 
 	app.Listen(*listenAddr)
 }
