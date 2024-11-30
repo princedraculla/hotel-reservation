@@ -18,6 +18,22 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 	}
 }
 
+func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
+	var params types.CreateUserParams
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+	hashedUser, err := types.EncodingUserPassword(params)
+	if err != nil {
+		return err
+	}
+	insertedUser, err := h.userStore.AddUser(c.Context(), hashedUser)
+	if err != nil {
+		return err
+	}
+	return c.JSON(insertedUser)
+}
+
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	ctx := context.Background()
@@ -28,10 +44,11 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
-	user := types.User{
-		FirstName: "amir",
-		LastName:  "torkashvand",
+	userList, err := h.userStore.UserList(c.Context())
+
+	if err != nil {
+		return err
 	}
 
-	return c.JSON(user)
+	return c.JSON(userList)
 }

@@ -14,6 +14,8 @@ const userColl string = "users"
 
 type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
+	UserList(context.Context) ([]*types.User, error)
+	AddUser(context.Context, *types.User) (*types.User, error)
 }
 
 type MongoUserStore struct {
@@ -29,6 +31,15 @@ func NewMongoUserStorer(client *mongo.Client) *MongoUserStore {
 	}
 }
 
+func (storer *MongoUserStore) AddUser(ctx context.Context, user *types.User) (*types.User, error) {
+	insertedUser, err := storer.collection.InsertOne(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	user.ID = insertedUser.InsertedID.(primitive.ObjectID)
+	return user, nil
+}
+
 func (storer *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
 	var user types.User
 	oid, err := primitive.ObjectIDFromHex(id)
@@ -39,4 +50,16 @@ func (storer *MongoUserStore) GetUserByID(ctx context.Context, id string) (*type
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (storer *MongoUserStore) UserList(ctx context.Context) ([]*types.User, error) {
+	cursor, err := storer.collection.Find(ctx, bson.A{})
+	if err != nil {
+		return nil, err
+	}
+	var users []*types.User
+	if err := cursor.Decode(&users); err != nil {
+		return nil, err
+	}
+	return users, nil
 }

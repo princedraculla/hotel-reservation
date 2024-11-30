@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
 	"flag"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/princedraculla/hotel-reservation/api"
@@ -15,24 +13,7 @@ import (
 
 var uri = "mongodb://localhost:27017"
 var config = fiber.Config{
-
-	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-
-		code := fiber.StatusInternalServerError
-
-		var e *fiber.Error
-		if errors.As(err, &e) {
-			code = e.Code
-		}
-
-		err = ctx.Status(code).SendFile(fmt.Sprintf("./%d.html", code))
-		if err != nil {
-
-			return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
-		}
-
-		return nil
-	},
+	ErrorHandler: api.ErrorHandler,
 }
 
 func main() {
@@ -51,6 +32,8 @@ func main() {
 	app := fiber.New(config)
 	apiv1User := app.Group("api/v1/user")
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
+	apiv1User.Get("/list", userHandler.HandleGetUsers)
+	apiv1User.Post("/add", userHandler.HandlePostUser)
 
 	app.Listen(*listenAddr)
 }
