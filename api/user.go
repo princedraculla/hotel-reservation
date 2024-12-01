@@ -23,6 +23,9 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
+	if errors := types.CreateUserParams.InputValidation(params); len(errors) > 0 {
+		return c.JSON(errors)
+	}
 	hashedUser, err := types.EncodingUserPassword(params)
 	if err != nil {
 		return err

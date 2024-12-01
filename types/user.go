@@ -2,6 +2,8 @@ package types
 
 import (
 	"encoding/base64"
+	"fmt"
+	"regexp"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -37,4 +39,33 @@ func EncodingUserPassword(params CreateUserParams) (*User, error) {
 		Email:             params.Email,
 		EncryptedPassword: hashedPassword,
 	}, nil
+}
+
+const (
+	minLenFirstName = 2
+	minLenLastName  = 2
+	minLenPassword  = 7
+)
+
+func (params CreateUserParams) InputValidation() []string {
+	var errors = []string{}
+
+	if len(params.FirstName) < minLenFirstName {
+		errors = append(errors, fmt.Sprintf("the minimum length of firstname is: %d", minLenFirstName))
+	}
+	if len(params.LastName) < minLenLastName {
+		errors = append(errors, fmt.Sprintf("the minimum length of last name is: %d", minLenLastName))
+	}
+	if len(params.Password) < minLenPassword {
+		errors = append(errors, fmt.Sprintf("the minimum length of password is: %d", minLenPassword))
+	}
+	if !isEmailValid(params.Email) {
+		errors = append(errors, fmt.Sprint("email is not valid"))
+	}
+	return errors
+}
+
+func isEmailValid(e string) bool {
+	emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+	return emailRegex.MatchString(e)
 }
