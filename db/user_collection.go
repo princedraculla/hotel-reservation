@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const DBNAME string = "hotel-reservation"
@@ -53,13 +54,16 @@ func (storer *MongoUserStore) GetUserByID(ctx context.Context, id string) (*type
 }
 
 func (storer *MongoUserStore) UserList(ctx context.Context) ([]*types.User, error) {
-	cursor, err := storer.collection.Find(ctx, bson.A{})
+	findOptions := options.Find()
+	cursor, err := storer.collection.Find(ctx, bson.D{}, findOptions)
 	if err != nil {
 		return nil, err
 	}
+
 	var users []*types.User
-	if err := cursor.Decode(&users); err != nil {
+	if err := cursor.All(ctx, &users); err != nil {
 		return nil, err
 	}
+
 	return users, nil
 }

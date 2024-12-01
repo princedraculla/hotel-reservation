@@ -27,13 +27,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	userHandler := api.NewUserHandler(db.NewMongoUserStorer(client))
 
 	app := fiber.New(config)
+	userHandler := api.NewUserHandler(db.NewMongoUserStorer(client))
 	apiv1User := app.Group("api/v1/user")
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
-	apiv1User.Get("/list", userHandler.HandleGetUsers)
 	apiv1User.Post("/add", userHandler.HandlePostUser)
+	app.Get("/list", userHandler.HandleGetUsers)
 
 	app.Listen(*listenAddr)
 }

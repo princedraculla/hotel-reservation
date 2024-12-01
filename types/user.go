@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/base64"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -11,7 +13,7 @@ type User struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	FirstName         string             `bson:"first_name" json:"firstName"`
 	LastName          string             `bson:"last_name" json:"lastName"`
-	Email             string             `bson:"email" json:"Email"`
+	Email             string             `bson:"email" json:"email"`
 	EncryptedPassword string             `bson:"hashed_password" json:"-" `
 }
 
@@ -27,10 +29,12 @@ func EncodingUserPassword(params CreateUserParams) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	hashedPassword := base64.StdEncoding.EncodeToString(ecpw)
 	return &User{
 		FirstName:         params.FirstName,
 		LastName:          params.LastName,
 		Email:             params.Email,
-		EncryptedPassword: string(ecpw),
+		EncryptedPassword: hashedPassword,
 	}, nil
 }
