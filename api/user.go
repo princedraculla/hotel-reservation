@@ -56,3 +56,12 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 
 	return c.JSON(userList)
 }
+
+func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
+	userID := c.Params("id")
+	err := h.userStore.DeleteUser(c.Context(), userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
