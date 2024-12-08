@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,6 +25,11 @@ type CreateUserParams struct {
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
+}
+
+type UpdateUserParams struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 func EncodingUserPassword(params CreateUserParams) (*User, error) {
@@ -60,7 +66,7 @@ func (params CreateUserParams) InputValidation() []string {
 		errors = append(errors, fmt.Sprintf("the minimum length of password is: %d", minLenPassword))
 	}
 	if !isEmailValid(params.Email) {
-		errors = append(errors, fmt.Sprint("email is not valid"))
+		errors = append(errors, fmt.Sprintf("email is not valid"))
 	}
 	return errors
 }
@@ -68,4 +74,15 @@ func (params CreateUserParams) InputValidation() []string {
 func isEmailValid(e string) bool {
 	emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 	return emailRegex.MatchString(e)
+}
+
+func (p UpdateUserParams) TOBSON() bson.M {
+	m := bson.M{}
+	if len(p.FirstName) > minLenFirstName {
+		m["firstName"] = p.FirstName
+	}
+	if len(p.LastName) > minLenLastName {
+		m["lastName"] = p.LastName
+	}
+	return m
 }

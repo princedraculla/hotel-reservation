@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/princedraculla/hotel-reservation/types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +19,7 @@ type UserStore interface {
 	UserList(context.Context) ([]*types.User, error)
 	AddUser(context.Context, *types.User) (*types.User, error)
 	DeleteUser(context.Context, string) error
+	UpdateUser(ctx context.Context, filter bson.D, params types.UpdateUserParams) error
 }
 
 type MongoUserStore struct {
@@ -78,5 +80,19 @@ func (storer *MongoUserStore) DeleteUser(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (storer *MongoUserStore) UpdateUser(ctx context.Context, filter bson.D, params types.UpdateUserParams) error {
+	fmt.Println(params)
+	update := bson.D{{"$set", params.TOBSON()}}
+	fmt.Println(filter)
+	fmt.Println(update)
+	result, err := storer.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	fmt.Println(result.MatchedCount)
+	fmt.Println(result.ModifiedCount)
 	return nil
 }
