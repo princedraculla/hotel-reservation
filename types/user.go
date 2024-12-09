@@ -79,10 +79,10 @@ func isEmailValid(e string) bool {
 func (p UpdateUserParams) TOBSON() bson.M {
 	m := bson.M{}
 	if len(p.FirstName) > minLenFirstName {
-		m["firstName"] = p.FirstName
+		m["first_name"] = p.FirstName
 	}
 	if len(p.LastName) > minLenLastName {
-		m["lastName"] = p.LastName
+		m["last_name"] = p.LastName
 	}
 	return m
 }

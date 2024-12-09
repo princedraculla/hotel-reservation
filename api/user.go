@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/princedraculla/hotel-reservation/db"
@@ -77,7 +76,7 @@ func (h *UserHandler) HandleUserUpdate(c *fiber.Ctx) error {
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
-	fmt.Println(params)
+
 	oid, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return err
