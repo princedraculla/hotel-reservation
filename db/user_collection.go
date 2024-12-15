@@ -11,7 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const DBNAME string = "hotel-reservation"
 const userColl string = "users"
 
 type Dropper interface {
