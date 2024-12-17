@@ -28,24 +28,32 @@ func main() {
 		Name:     "Taj Mahal Hotel",
 		Location: "Tehran,iran",
 	}
-	rooms := types.Room{
-		Type:      types.DeluxeRoomType,
-		BasePrice: 99.9,
+	rooms := []types.Room{
+		{Type: types.DeluxeRoomType,
+			BasePrice: 99.9},
+		{
+			Type:      types.DoubleRoomTYpe,
+			BasePrice: 80.8,
+		},
+		{
+			Type:      types.SingleRoomType,
+			BasePrice: 50.4,
+		},
 	}
 
 	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
 	if err != nil {
 		log.Fatal(err)
 	}
-	rooms.HotelID = insertedHotel.ID
-
-	insertedRoom, err := roomStore.InsertRoom(ctx, &rooms)
-	if err != nil {
-		log.Fatal(err)
+	for _, room := range rooms {
+		room.HotelID = insertedHotel.ID
+		insertedRoom, err := roomStore.InsertRoom(ctx, &room)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(insertedRoom)
 	}
 
 	fmt.Println("seeding Database...!")
-	fmt.Println(insertedHotel)
-	fmt.Println(insertedRoom)
 
 }
