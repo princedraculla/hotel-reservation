@@ -7,6 +7,7 @@ import (
 
 	"github.com/princedraculla/hotel-reservation/db"
 	"github.com/princedraculla/hotel-reservation/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,12 +22,13 @@ func main() {
 		panic(err)
 	}
 
-	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
-	roomStore := db.NewMongoRoomStore(client, db.DBNAME)
+	hotelStore := db.NewMongoHotelStore(client)
+	roomStore := db.NewMongoRoomStore(client, hotelStore)
 
 	hotel := types.Hotel{
 		Name:     "Taj Mahal Hotel",
 		Location: "Tehran,iran",
+		Rooms:    []primitive.ObjectID{},
 	}
 	rooms := []types.Room{
 		{Type: types.DeluxeRoomType,

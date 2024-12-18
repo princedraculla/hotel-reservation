@@ -2,8 +2,10 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/princedraculla/hotel-reservation/types"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -15,12 +17,14 @@ type RoomStore interface {
 type MongoRoomStore struct {
 	client     *mongo.Client
 	collection *mongo.Collection
+	HotelStore
 }
 
-func NewMongoRoomStore(client *mongo.Client, dbname string) *MongoRoomStore {
+func NewMongoRoomStore(client *mongo.Client, hotelStore HotelStore) *MongoRoomStore {
 	return &MongoRoomStore{
 		client:     client,
-		collection: client.Database(dbname).Collection("rooms"),
+		collection: client.Database(DBNAME).Collection("rooms"),
+		HotelStore: hotelStore,
 	}
 }
 
@@ -30,5 +34,11 @@ func (roomStore *MongoRoomStore) InsertRoom(ctx context.Context, rooms *types.Ro
 		return nil, err
 	}
 	rooms.ID = insertedRoom.InsertedID.(primitive.ObjectID)
+	filter := bson.M{"_id": rooms.HotelID}
+	update := bson.M{"$push": bson.M{"rooms": rooms.ID}}
+	if err = roomStore.HotelStore.Update(ctx, filter, update); err != nil {
+		return nil, err
+	}
+	fmt.Println(rooms)
 	return rooms, nil
 }
