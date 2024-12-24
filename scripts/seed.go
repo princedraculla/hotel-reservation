@@ -21,7 +21,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
+		log.Fatal(err)
+	}
 	hotelStore := db.NewMongoHotelStore(client)
 	roomStore := db.NewMongoRoomStore(client, hotelStore)
 
