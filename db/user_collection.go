@@ -32,10 +32,15 @@ type MongoUserStore struct {
 }
 
 func NewMongoUserStorer(client *mongo.Client, dbname string) *MongoUserStore {
-
+	if dbname == "hotel-reservation-test" {
+		return &MongoUserStore{
+			client:     client,
+			collection: client.Database(DBNAME).Collection(userColl),
+		}
+	}
 	return &MongoUserStore{
 		client:     client,
-		collection: client.Database(dbname).Collection(userColl),
+		collection: client.Database(DBNAME).Collection(userColl),
 	}
 }
 
