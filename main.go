@@ -50,6 +50,7 @@ func main() {
 
 	// hotel APIs
 	app.Get("/hotels", hotelHandler.GetHotels)
+	app.Get("/hotel/:id/rooms", hotelHandler.GetRooms)
 
 	//server start
 	app.Listen(*listenAddr)
