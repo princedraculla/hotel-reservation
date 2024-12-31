@@ -86,3 +86,7 @@ func (p UpdateUserParams) TOBSON() bson.M {
 	}
 	return m
 }
+
+func IsValidPassword(encpw string, pw string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(encpw), []byte(pw)) == nil
+}
