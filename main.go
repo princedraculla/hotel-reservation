@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"github.com/princedraculla/hotel-reservation/api"
 	"github.com/princedraculla/hotel-reservation/db"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,6 +19,9 @@ var config = fiber.Config{
 }
 
 func main() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatalf("error for loading .env file %s", err)
+	}
 	listenAddr := flag.String("listenAddr", ":5000", "server running properly")
 
 	//database connection
