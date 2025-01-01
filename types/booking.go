@@ -14,3 +14,9 @@ type Booking struct {
 	FromDate  time.Time          `bson:"fromDate" json:"fromDate"`
 	TilDate   time.Time          `bson:"tilDate" json:"tilDate"`
 }
+
+type CreateBookingParams struct {
+	NumPerson int       `json:"numPerson"`
+	FromDate  time.Time `json:"fromDate"`
+	TilDate   time.Time `json:"tilDate"`
+}
