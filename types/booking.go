@@ -7,6 +7,7 @@ import (
 )
 
 type Booking struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	UserID    primitive.ObjectID `bson:"userID" json:"userID"`
 	RoomID    primitive.ObjectID `bson:"roomID" json:"roomID"`
 	NumPerson int                `bson:"numPerson" json:"numPerson"`
