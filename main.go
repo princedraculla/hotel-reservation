@@ -49,8 +49,12 @@ func main() {
 		app          = fiber.New(config)
 		hotelHandler = api.NewHotelHandler(store)
 		userHandler  = api.NewUserHandler(userStore)
-		apiv1User    = app.Group("api/v1/user")
+		authHandler  = api.NewAuthHandler(userStore)
+		apiv1User    = app.Group("api/v1/user", api.JWTAuthenticate(userStore))
 	)
+
+	// register and login
+	app.Post("/api/register", authHandler.HandleAutheticate)
 
 	// user APIs
 	apiv1User.Put("/:id", userHandler.HandleUserUpdate)
